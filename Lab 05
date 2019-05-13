@@ -1,0 +1,143 @@
+package lab05;
+
+import java.util.Random;
+
+/**
+ *
+ * @author 
+ *
+ */
+public class Compare {
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) 
+    {
+
+        Random r = new Random(); //Declares a new random vsriable from the Random class.    
+        boolean array = false; //assigns false to the boolean array.
+        long [][] list = new long[3][21]; //Declares a long double array with 3 columns and 21 rows.
+        int timer = 0;
+        int[] columns = new int[3]; //Declares a single
+        int formatCommas = 0;
+
+        try {
+            for (int i = 1024; !array; i = i * 2) 
+            {
+                ArrayQueue aq = new ArrayQueue<>(i);
+                ArrayStack as = new ArrayStack<>(i);
+                
+                long start = System.currentTimeMillis();
+
+                for (int a = 0; a < i; a++) 
+                {
+                    aq.enqueue(r.nextInt(200) - 100);
+                }
+                for (int a = 0; a < i; a++) 
+                {
+                    as.push(aq.dequeue());
+                }
+                for (int a = 0; a < i; a++) 
+                {
+                    aq.enqueue(as.pop());
+                }
+                
+                long end = System.currentTimeMillis();
+                list[0][timer] = i;
+                list[1][timer++] = end - start;
+            }
+            
+        } 
+        catch (OutOfMemoryError e) 
+        {
+            System.out.println("You have ran out of memory, try again.");
+        }
+        
+        timer = 0;
+        
+        try {
+            for (int i = 1024; !array; i = i * 2) 
+            {
+                LinkedQueue lq = new LinkedQueue();
+                LinkedStack ls = new LinkedStack();
+                
+                long start = System.currentTimeMillis();
+                
+                for (int a = 0; a < i; a++) 
+                {
+                    lq.enqueue(ls.pop());
+                }
+                for (int a = 0; a < i; a++) 
+                {
+                    ls.push(lq.dequeue());
+                }
+                
+                long end = System.currentTimeMillis();
+                list[2][timer++] = end - start;
+            }
+        } 
+        catch (OutOfMemoryError e) 
+        {
+            System.out.println("You have ran out of memory, try again.");
+        }
+
+        for(int alignCommas = 20; !array; alignCommas--)
+        {
+            if(list[0][alignCommas] != 0)
+            {
+                columns[0] = (int) ((double) (Math.log10(list[0][alignCommas]) + 1) * 1.33d);
+                array = true;
+            }
+        }
+        
+        for(int i = 1; i < 3; i++)
+        {
+            array = true;
+            for(int j = formatCommas; !array && j >=0; j--)
+            {
+                if(list[i][j] != 0)
+                {
+                    columns[i] = (int) ((double) (Math.log10(list[i][j]) + 1) *1.33d);
+                    array = true;
+                }
+            }
+        }
+        
+        if(columns[1] < 5)
+            columns[1] = 5;
+        
+        if(columns[2] < 6)
+            columns[2] =6 ;
+        
+        String table = "+";
+        for(int i = 0; i < columns[0] + 4; i++)
+            table += "-";
+        
+        table += "+";
+        for(int i = 0; i < columns[1] + 4; i++)
+            table += "-";
+        
+        table += "+";
+        for(int i = 0; i < columns[2] + 4; i++)
+            table += "-";
+        
+        table += "+";
+        System.out.println(table);
+        
+        System.out.printf(("| %" + (int) ((float) columns[0] / 2 - .5) + "s%s%" + (columns[0] / 2 - 1) + "s | %" + (int) ((float) (columns[1] + columns[2]) / 2 - .5) + "s%s%" + ((columns[1] + columns[2]) / 2 - 1) + "s|%n"), " ", "Size", " ", " ", "Time (msec)","");
+        System.out.printf("|  %" + (int) ((float) columns[0] / 2 + .5) + "s%s%" + (columns[0] / 2 - 1) + "s  |%" + (int) ((float) columns[1] / 2 - 1.5) + "s%s%" + (columns[1] / 2 - 1) + "s |%" + (int) ((float) columns[2] / 2 - 1) + "s  |%n", " ", "N", " ", " ", "Static", " ", " Dynamic", " ");
+        System.out.printf(table + "%n");
+        
+        for(timer = 0; timer <= 20; timer++)
+        {
+            if(list[0][timer] != 0)
+            {
+                System.out.printf(("|  %," + columns[0] + "d  |  %," + columns[1] + "d  |  %," + columns[2] + "d  |\n"), list[0][timer], list[1][timer], list[2][timer]);
+                System.out.println(table);
+            }
+        }
+        
+    }
+
+}
